@@ -1,18 +1,12 @@
 import dotenv from "dotenv";
 import Fastify from "fastify";
-import fastifyStatic from "@fastify/static";
 import fastifyCookie from "@fastify/cookie";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { createServer } from "node:http";
 import { logging, server as wisp } from "@mercuryworkshop/wisp-js/server";
 import { createBareServer } from "@tomphttp/bare-server-node";
 import { MasqrMiddleware } from "./masqr.js";
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const port = process.env.PORT || 2345;
 const server = createServer();
@@ -48,27 +42,11 @@ const app = Fastify({
 
 await app.register(fastifyCookie);
 
-app.register(fastifyStatic, {
-  root: join(__dirname, "dist"),
-  prefix: "/",
-  decorateReply: true,
-  etag: true,
-  lastModified: true,
-  cacheControl: true,
-  setHeaders(res, path) {
-    if (path.endsWith(".html")) {
-      res.setHeader("Cache-Control", "no-cache, must-revalidate");
-    } else if (/\.[a-f0-9]{8,}\./.test(path)) {
-      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-    } else {
-      res.setHeader("Cache-Control", "public, max-age=3600");
-    }
-  }
-});
-
-if (process.env.MASQR === "true")
+if (process.env.MASQR === "true") {
   app.addHook("onRequest", MasqrMiddleware);
+}
 
+// Proxy logic remains unchanged
 const proxy = (url, type = "application/javascript") => async (req, reply) => {
   try {
     const res = await fetch(url(req));
@@ -102,6 +80,7 @@ const proxy = (url, type = "application/javascript") => async (req, reply) => {
   }
 };
 
+// Keep these — they’re backend endpoints
 app.get("/assets/*", proxy(req => `https://dogeub-assets.pages.dev/${req.params["*"]}`, ""));
 app.get("/assets-fb/*", proxy(req => `https://dogeub-assets.ftp.sh/${req.params["*"]}`, ""));
 app.get("/js/script.js", proxy(() => "https://byod.privatedns.org/js/script.js"));
@@ -114,10 +93,9 @@ app.get("/return", async (req, reply) =>
     : reply.code(401).send({ error: "query parameter?" })
 );
 
+// Remove static serving — Vercel will handle that
 app.setNotFoundHandler((req, reply) =>
-  req.raw.method === "GET" && req.headers.accept?.includes("text/html")
-    ? reply.sendFile("index.html")
-    : reply.code(404).send({ error: "Not Found" })
+  reply.code(404).send({ error: "Not Found" })
 );
 
-app.listen({ port }).then(() => console.log(`Server running on ${port}`));
+app.listen({ port }).then(() => console.log(`Backend running on ${port}`));
