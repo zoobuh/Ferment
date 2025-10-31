@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import Fastify from "fastify";
 import fastifyCookie from "@fastify/cookie";
-import { createServer } from "node:http";
+import fastifyCors from "@fastify/cors";
 import { logging, server as wisp } from "@mercuryworkshop/wisp-js/server";
 import { createBareServer } from "@tomphttp/bare-server-node";
 import { MasqrMiddleware } from "./masqr.js";
@@ -9,44 +9,44 @@ import { MasqrMiddleware } from "./masqr.js";
 dotenv.config();
 
 const port = process.env.PORT || 2345;
-const server = createServer();
+
+// Bare server for /seal/
 const bare = process.env.BARE !== "false" ? createBareServer("/seal/") : null;
+
+// Silence logging
 logging.set_level(logging.NONE);
 
+// Wisp options
 Object.assign(wisp.options, {
   dns_method: "resolve",
   dns_servers: ["1.1.1.3", "1.0.0.3"],
   dns_result_order: "ipv4first"
 });
 
-server.on("upgrade", (req, sock, head) =>
-  bare?.shouldRoute(req)
-    ? bare.routeUpgrade(req, sock, head)
-    : req.url.endsWith("/wisp/")
-      ? wisp.routeRequest(req, sock, head)
-      : sock.end()
-);
-
 const app = Fastify({
-  serverFactory: h => (
-    server.on("request", (req, res) =>
-      bare?.shouldRoute(req) ? bare.routeRequest(req, res) : h(req, res)
-    ),
-    server
-  ),
   logger: false,
   keepAliveTimeout: 30000,
   connectionTimeout: 60000,
   forceCloseConnections: true
 });
 
+// Cookies
 await app.register(fastifyCookie);
 
+// CORS for Vercel frontend
+await app.register(fastifyCors, {
+  origin: "https://fermet.vercel.app", // replace with your frontend URL
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Set-Cookie"],
+  credentials: true
+});
+
+// Masqr middleware
 if (process.env.MASQR === "true") {
   app.addHook("onRequest", MasqrMiddleware);
 }
 
-// Proxy logic remains unchanged
+// Proxy helper
 const proxy = (url, type = "application/javascript") => async (req, reply) => {
   try {
     const res = await fetch(url(req));
@@ -80,7 +80,7 @@ const proxy = (url, type = "application/javascript") => async (req, reply) => {
   }
 };
 
-// Keep these — they’re backend endpoints
+// Routes
 app.get("/assets/*", proxy(req => `https://dogeub-assets.pages.dev/${req.params["*"]}`, ""));
 app.get("/assets-fb/*", proxy(req => `https://dogeub-assets.ftp.sh/${req.params["*"]}`, ""));
 app.get("/js/script.js", proxy(() => "https://byod.privatedns.org/js/script.js"));
@@ -93,9 +93,21 @@ app.get("/return", async (req, reply) =>
     : reply.code(401).send({ error: "query parameter?" })
 );
 
-// Remove static serving — Vercel will handle that
+// 404 handler
 app.setNotFoundHandler((req, reply) =>
   reply.code(404).send({ error: "Not Found" })
 );
 
-app.listen({ port }).then(() => console.log(`Backend running on ${port}`));
+// WebSocket upgrade for /wisp/ and /seal/
+app.server.on("upgrade", (req, socket, head) => {
+  if (bare?.shouldRoute(req)) {
+    bare.routeUpgrade(req, socket, head);
+  } else if (req.url.endsWith("/wisp/")) {
+    wisp.routeRequest(req, socket, head);
+  } else {
+    socket.end();
+  }
+});
+
+// Start server
+app.listen({ port, host: "0.0.0.0" }).then(() => console.log(`Backend running on port ${port}`));
