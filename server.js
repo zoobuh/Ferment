@@ -92,6 +92,11 @@ app.get("/return", async (req, reply) =>
         .catch(() => reply.code(500).send({ error: "request failed" }))
     : reply.code(401).send({ error: "query parameter?" })
 );
+// Heartbeat route
+app.get("/heartbeat", async (req, reply) => {
+  return reply.send({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 
 // 404 handler
 app.setNotFoundHandler((req, reply) =>
