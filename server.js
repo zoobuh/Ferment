@@ -35,7 +35,7 @@ await app.register(fastifyCookie);
 
 // CORS for Vercel frontend
 await app.register(fastifyCors, {
-  origin: "https://fermet.vercel.app", // replace with your frontend URL
+  origin: ["https://fermet-six.vercel.app", "https://fermet.gegamo.xyz"],// replace with your frontend URL
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Set-Cookie"],
   credentials: true
