@@ -4,6 +4,7 @@ import { useOptions } from '/src/utils/optionsContext';
 import { Plus, CircleX, Globe } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import LinkDialog from './NewQuickLink';
+import { colors, transitions } from '../utils/theme';
 
 const QuickLinks = ({ cls, nav = true }) => {
   const { options, updateOption } = useOptions();
@@ -74,7 +75,21 @@ const QuickLinks = ({ cls, nav = true }) => {
       )}
     >
       {quickLinks.map((link, i) => (
-        <div className={linkItem} key={i} onClick={() => g(link.link)}>
+        <div 
+          className={linkItem} 
+          key={i} 
+          onClick={() => g(link.link)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = colors.mint[400];
+            e.currentTarget.style.backgroundColor = `rgba(43, 217, 167, 0.05)`;
+            e.currentTarget.style.transform = 'translateY(-4px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'transparent';
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
           <div
             onClick={(e) => {
               e.preventDefault();
@@ -85,12 +100,13 @@ const QuickLinks = ({ cls, nav = true }) => {
               'absolute -top-2 -right-2 opacity-0',
               'group-hover:opacity-100 duration-200 ease',
             )}
+            style={{ color: colors.mint[400] }}
           >
-            <CircleX size="16" className="opacity-50" />
+            <CircleX size="16" />
           </div>
           <div className={linkLogo}>
             {fallback[i] ? (
-              <Globe className="w-7 h-7" />
+              <Globe className="w-7 h-7" style={{ color: colors.mint[400] }} />
             ) : (
               <img
                 src={link.icon}
@@ -105,9 +121,22 @@ const QuickLinks = ({ cls, nav = true }) => {
           </div>
         </div>
       ))}
-      <div className={`${linkItem} cursor-pointer`} onClick={() => setOpen(true)}>
+      <div 
+        className={`${linkItem} cursor-pointer`} 
+        onClick={() => setOpen(true)}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = colors.mint[400];
+          e.currentTarget.style.backgroundColor = `rgba(43, 217, 167, 0.05)`;
+          e.currentTarget.style.transform = 'translateY(-4px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'transparent';
+          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
+      >
         <div className={linkLogo}>
-          <Plus className="w-7 h-7" />
+          <Plus className="w-7 h-7" style={{ color: colors.mint[400] }} />
         </div>
         <div className="mt-3 text-sm font-medium text-center">New</div>
       </div>

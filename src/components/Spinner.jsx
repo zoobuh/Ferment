@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Spinner = ({ size = 48, color = '#00b6f7' }) => {
+const Spinner = ({ size = 48, color = '#2BD6A5' }) => {
   const border = Math.max(3, Math.floor(size / 12));
   return (
     <div
@@ -10,7 +10,7 @@ const Spinner = ({ size = 48, color = '#00b6f7' }) => {
         width: size,
         height: size,
         borderRadius: '9999px',
-        border: `${border}px solid rgba(0, 182, 247, 0.18)`,
+        border: `${border}px solid rgba(43, 214, 165, 0.2)`,
         borderTopColor: color,
         animation: 'fermet-spin 900ms linear infinite',
       }}

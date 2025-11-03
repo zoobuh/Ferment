@@ -15,17 +15,17 @@ input {
   border-radius: 18px;
   font-size: 16px;
   padding: 1.2rem 1.25rem;
-  background: #000000;
-  border: 2px solid #00b6f7;
-  color: #e6faff;
+  background: #242528;
+  border: 2px solid #2BD6A5;
+  color: #F9F9F9;
   box-shadow: 0 6px 22px rgba(0,0,0,0.35);
   transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
 }
 
 .app:hover {
   transform: translateY(-2px);
-  border-color: #25c6ff;
-  box-shadow: 0 0 0 2px rgba(0,182,247,0.25), 0 12px 28px rgba(0,0,0,0.5);
+  border-color: #2BD6A5;
+  box-shadow: 0 0 0 2px rgba(43, 214, 165, 0.25), 0 12px 28px rgba(0,0,0,0.5);
 }
 
 .compact {

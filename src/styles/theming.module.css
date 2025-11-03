@@ -20,20 +20,20 @@
 
 
 .theme-default {
-  --nav-bg: #0a0a0acc;
-  --nav-border: #00b6f7;
-  --search-border: #00b6f7;
-  --search-bg: #000000;
-  --search-ph: #00b6f7;
-  --search-color: #e6faff;
-  --settings-panel: #000000;
-  --settings-border: #00b6f7;
-  --apps-bg: #000000;
-  --apps-border: #00b6f7;
-  --apps-text: #e6faff;
-  --apps-ph: #00b6f7;
-  --item-bg: #000000;
-  --item-border: #00b6f7;
+  --nav-bg: #242528;
+  --nav-border: #2BD6A5;
+  --search-border: #2BD6A5;
+  --search-bg: #242528;
+  --search-ph: #a6adb3;
+  --search-color: #F9F9F9;
+  --settings-panel: #242528;
+  --settings-border: #2BD6A5;
+  --apps-bg: #242528;
+  --apps-border: #2BD6A5;
+  --apps-text: #F9F9F9;
+  --apps-ph: #a6adb3;
+  --item-bg: #242528;
+  --item-border: #2BD6A5;
 }
 
 .theme-mocha {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useOptions } from '../utils/optionsContext';
 import Search from '../components/SearchContainer';
 import QuickLinks from '../components/QuickLinks';
+import { colors } from '../utils/theme';
 
 // Utility function for color calculation
 const calc = (hex, alpha = 0.5) => {
@@ -49,20 +50,41 @@ export default function NewTab() {
   }).format(time);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-8">
-      <div className="-mt-10 text-center">
+    <div 
+      className="min-h-screen flex flex-col items-center justify-center p-6 gap-8"
+      style={{
+        backgroundColor: colors.dark[800],
+        animation: 'fadeIn 0.5s ease-out',
+      }}
+    >
+      <div className="-mt-10 text-center" style={{ animation: 'slideUp 0.6s ease-out' }}>
         <div
           className="text-5xl font-light mb-2"
-          style={{ fontFamily: 'SFProText, system-ui, sans-serif', color: colorConfig.text }}
+          style={{ 
+            fontFamily: 'SFProText, system-ui, sans-serif', 
+            color: colors.text.primary,
+            fontWeight: 300,
+          }}
         >
           {formattedTime}
         </div>
-        <div className="text-lg" style={{ color: colorConfig.textMuted }}>
-          {greeting} • {formattedDate}
+        <div 
+          className="text-lg" 
+          style={{ 
+            color: colors.text.muted,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          <span>{greeting}</span>
+          <span style={{ color: colors.mint[400] }}>•</span>
+          <span>{formattedDate}</span>
         </div>
       </div>
 
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl" style={{ animation: 'slideUp 0.7s ease-out' }}>
         <Search logo={false} nav={false} cls="-mt-3 absolute z-50" />
         <QuickLinks cls="mt-16" nav={false} />
       </div>

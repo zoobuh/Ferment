@@ -5,18 +5,18 @@
         const options = JSON.parse(localStorage.getItem("options") || "{}");
 
         const css = `
-          body { color: ${options.bodyText || "#e6faff"}; }
-          #url input::placeholder { color: ${options.urlBarText || "#e6faff"}; }
-          #d-url { background-color: ${options.urlBarBg || "#000000"}; color: ${options.urlBarText || "#e6faff"}; border-bottom: 1px solid ${options.tabBarBorder || "#00b6f7"}; }
-          #tb { background-color: ${options.tabBarBg || "#0a0a0a"}; border-color: ${options.tabBarBorder || "#00b6f7"}; }
-          .ub { background-color: ${options.ubBg || "#000000cc"}; }
-          .ub:hover:not(:has(input:focus)) { background-color: ${options.ubHover || "#00b6f733"}; }
-          .tooltip { background-color: ${options.tooltipBg || "#00141a"}; color: ${options.tooltipText || "#e6faff"}; }
-          .has-tooltip:hover { background-color: ${options.hoverBg || "#00b6f733"}; }
-          .has-tooltip:active { background-color: ${options.activeBg || "#00b6f766"}; }
-          .lscr { background-color: ${options.loadingSrBgColor || "#000000"}; }
-          .loading svg polyline#back { stroke: ${options.loadingIconBack || "#00b6f733"}; }
-          .loading svg polyline#front { stroke: ${options.loadingIconFront || "#00b6f7"}; }
+          body { color: ${options.bodyText || "#F9F9F9"}; background-color: #1E1F22; }
+          #url input::placeholder { color: ${options.urlBarText || "#a6adb3"}; }
+          #d-url { background-color: ${options.urlBarBg || "#242528"}; color: ${options.urlBarText || "#F9F9F9"}; border-bottom: 1px solid ${options.tabBarBorder || "#2BD6A5"}; }
+          #tb { background-color: ${options.tabBarBg || "#1E1F22"}; border-color: ${options.tabBarBorder || "#2BD6A5"}; }
+          .ub { background-color: ${options.ubBg || "#242528"}; }
+          .ub:hover:not(:has(input:focus)) { background-color: ${options.ubHover || "rgba(43, 214, 165, 0.1)"}; border: 1px solid #2BD6A5; }
+          .tooltip { background-color: ${options.tooltipBg || "#242528"}; color: ${options.tooltipText || "#F9F9F9"}; border: 1px solid #2BD6A5; }
+          .has-tooltip:hover { background-color: ${options.hoverBg || "rgba(43, 214, 165, 0.1)"}; }
+          .has-tooltip:active { background-color: ${options.activeBg || "rgba(43, 214, 165, 0.2)"}; }
+          .lscr { background-color: ${options.loadingSrBgColor || "#1E1F22"}; }
+          .loading svg polyline#back { stroke: ${options.loadingIconBack || "rgba(43, 214, 165, 0.2)"}; }
+          .loading svg polyline#front { stroke: ${options.loadingIconFront || "#2BD6A5"}; }
         `;
 
         document.documentElement.classList.add(options.type || 'dark');
@@ -77,7 +77,8 @@
         font-family: "Geist";
         font-size: 14px;
         font-weight: 500;
-        background-color: black;
+        background-color: #1E1F22;
+        color: #F9F9F9;
       }
 
       .tooltip {
@@ -122,8 +123,8 @@
       @keyframes fermet-spin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
       .fermet-spinner {
         width: 56px; height: 56px; border-radius: 9999px;
-        border: 5px solid rgba(0, 182, 247, 0.18);
-        border-top-color: #00b6f7;
+        border: 5px solid rgba(43, 214, 165, 0.2);
+        border-top-color: #2BD6A5;
         animation: fermet-spin 900ms linear infinite;
       }
     </style>

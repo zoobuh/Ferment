@@ -25,7 +25,7 @@ const SettingsContainerItem = ({
       )}
       style={{
         backgroundColor: options.settingsContainerColor || '#000000',
-        border: `1px solid ${options.settingsBorder || options.paginationBorderColor || '#00b6f7'}`,
+        border: `1px solid ${options.settingsBorder || options.paginationBorderColor || '#2BD6A5'}`,
       }}
     >
       <div className="min-w-0 flex-1 overflow-hidden">

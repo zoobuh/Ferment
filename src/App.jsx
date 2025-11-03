@@ -6,6 +6,7 @@ import NotFound from "./pages/NotFound";
 import { useEffect, useMemo, memo } from "react";
 import { useLocation } from "react-router-dom";
 import { OptionsProvider, useOptions } from "./utils/optionsContext";
+import { designConfig as bgDesign } from "./utils/config";
 import { initPreload } from "./utils/preload";
 import "./index.css";
 import "nprogress/nprogress.css";
@@ -23,8 +24,8 @@ const Settings = lazyLoad(importSettings);
 const New = lazyLoad(() => import("./pages/New"));
 const Player = lazyLoad(() => import("./pages/Player"));
 
-initPreload("/support", importApps);
-initPreload("/documentation", importGames);
+initPreload("/apps", importApps);
+initPreload("/games", importGames);
 initPreload("/settings", importSettings);
 initPreload("/", importHome);
 
@@ -42,9 +43,9 @@ const ThemedApp = memo(() => {
 
   const pages = useMemo(() => [
     { path: "/", element: <Home /> },
-    { path: "/support", element: <Apps /> },
-    { path: "/documentation", element: <Games /> },
-    { path: "/documentation/r", element: <Player /> },
+    { path: "/apps", element: <Apps /> },
+    { path: "/games", element: <Games /> },
+    { path: "/games/r", element: <Player /> },
     { path: "/browser", element: <Loader /> },
     { path: "/settings", element: <Settings /> },
     { path: "/new", element: <New /> },
@@ -52,14 +53,19 @@ const ThemedApp = memo(() => {
   ], []);
 
   const backgroundStyle = useMemo(() => {
+    const bgDesignConfig = options.bgDesign === "None"
+      ? "none"
+      : (bgDesign.find(d => d.value.bgDesign === options.bgDesign) || bgDesign[0])
+          .value.getCSS?.(options.bgDesignColor || "102, 105, 109") || "none";
+
     return `
       body {
-        color: ${options.siteTextColor || "#e6faff"};
-        background-image: none;
-        background-color: ${options.bgColor || "#000000"};
+        color: ${options.siteTextColor || "#e6e9ec"};
+        background-image: ${bgDesignConfig};
+        background-color: ${options.bgColor || "#1e1f22"};
       }
     `;
-  }, [options.siteTextColor, options.bgColor]);
+  }, [options.siteTextColor, options.bgDesign, options.bgDesignColor, options.bgColor]);
 
   return (
     <>

@@ -6,6 +6,7 @@ import { Search, HatGlasses, Palette, Globe, Wrench } from 'lucide-react';
 import { useOptions } from '/src/utils/optionsContext';
 import RenderSetting from '../components/Settings';
 import { privacyConfig, customizeConfig, browsingConfig, advancedConfig } from '/src/data/settings';
+import { colors, transitions, shadows } from '../utils/theme';
 
 const configs = [
   { name: 'Privacy', icon: HatGlasses, keywords: ['title','cloak','cloaking','tab cloak','about','about:blank','blank'], fn: privacyConfig },
@@ -45,47 +46,129 @@ const Settings = () => {
     filtered.some(s => s.keywords.some(kw => kw.toLowerCase().includes(fq)));
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen" style={{ backgroundColor: colors.dark[800] }}>
       <div className="shrink-0"><Nav /></div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className={clsx(theme['settings-panelColor'], theme[`theme-${options.theme||'default'}`],'w-60 shrink-0 overflow-y-auto p-2 pt-3')}>
-          <div className="flex items-center max-w-52 h-7 rounded-lg mx-auto px-2" style={{ backgroundColor: options.settingsSearchBar || '#3c475a' }}>
-            <Search className="w-4 mr-1.5" />
+        {/* Sidebar */}
+        <div 
+          className="w-72 shrink-0 overflow-y-auto"
+          style={{
+            backgroundColor: colors.dark[900],
+            borderRight: `1px solid ${colors.dark[700]}`,
+            padding: '1.5rem 1rem',
+          }}
+        >
+          {/* Search Bar */}
+          <div 
+            className="flex items-center h-10 rounded-lg px-3 mb-6"
+            style={{
+              backgroundColor: colors.dark[800],
+              border: `1px solid ${colors.border.light}`,
+              transition: `all ${transitions.base}`,
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = colors.mint[400];
+              e.currentTarget.style.boxShadow = `0 0 0 3px rgba(43, 217, 167, 0.1)`;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = colors.border.light;
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <Search className="w-4 mr-2" style={{ color: colors.text.muted }} />
             <input
               type="text"
-              placeholder="Filter settings"
-              className="bg-transparent outline-hidden w-full text-sm"
+              placeholder="Search settings..."
+              className="bg-transparent outline-none w-full text-sm"
+              style={{ color: colors.text.primary }}
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
           </div>
 
-          {showKeywordTip && <div className="mt-2 text-xs text-gray-400 text-center px-2">May contain what you're looking for</div>}
-          {fq && matchCount > 1 && <div className="mt-2 text-xs text-gray-400 text-center px-2">Found {matchCount} matching settings</div>}
+          {/* Tips */}
+          {showKeywordTip && (
+            <div 
+              className="mb-3 text-xs text-center px-2 py-2 rounded-lg"
+              style={{ 
+                color: colors.mint[400],
+                backgroundColor: `rgba(43, 217, 167, 0.1)`,
+                animation: 'fadeIn 0.3s ease-out',
+              }}
+            >
+              May contain what you're looking for
+            </div>
+          )}
+          {fq && matchCount > 1 && (
+            <div 
+              className="mb-3 text-xs text-center px-2 py-2 rounded-lg"
+              style={{ 
+                color: colors.text.muted,
+                backgroundColor: colors.dark[800],
+                animation: 'fadeIn 0.3s ease-out',
+              }}
+            >
+              Found {matchCount} matching settings
+            </div>
+          )}
 
-          <div className="flex flex-col gap-3 mt-5">
+          {/* Category List */}
+          <div className="flex flex-col gap-2">
             {filtered.map(({ name, icon: Icon, items }) => {
               const matched = fq ? items.filter(i => i.name.toLowerCase().includes(fq)) : [];
+              const isActive = content === name;
+              
               return (
                 <div
                   key={name}
-                  className={clsx('w-full flex flex-col rounded-xl duration-75 cursor-pointer px-5 py-2', content!==name && 'bg-transparent hover:bg-[#ffffff23]')}
-                  style={{ backgroundColor: content===name ? options.settingsPanelItemBackgroundColor || '#405a77' : undefined }}
+                  className="w-full flex flex-col rounded-lg cursor-pointer overflow-hidden"
+                  style={{
+                    backgroundColor: isActive ? colors.mint[400] : 'transparent',
+                    transition: `all ${transitions.base}`,
+                    animation: 'slideUp 0.3s ease-out',
+                  }}
                   onClick={() => setContent(prev => prev===name ? '' : name)}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = colors.dark[800];
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                  }}
                 >
-                  <div className="flex items-center h-6">
-                    <Icon className="w-5" />
-                    <p className="mx-4">{name}</p>
+                  <div 
+                    className="flex items-center px-4 py-3"
+                    style={{
+                      color: isActive ? colors.dark[900] : colors.text.secondary,
+                    }}
+                  >
+                    <Icon className="w-5" strokeWidth={isActive ? 2.5 : 2} />
+                    <p className="ml-3 font-semibold text-sm">{name}</p>
                   </div>
-                  {matched.length > 0 && <p className="ml-9 text-xs text-gray-400 truncate">{matched.map(i=>i.name).join(', ')}</p>}
+                  {matched.length > 0 && (
+                    <p 
+                      className="ml-12 mr-4 pb-2 text-xs truncate"
+                      style={{ 
+                        color: isActive ? colors.dark[800] : colors.text.muted,
+                      }}
+                    >
+                      {matched.map(i=>i.name).join(', ')}
+                    </p>
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
 
-        <RenderSetting setting={content} />
+        {/* Content Area */}
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          <RenderSetting setting={content} />
+        </div>
       </div>
     </div>
   );

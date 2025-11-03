@@ -6,6 +6,7 @@ import { GlowWrapper } from '../utils/Glow';
 import { useOptions } from '../utils/optionsContext';
 import Logo from '../components/Logo';
 import theme from '../styles/theming.module.css';
+import { colors, transitions } from '../utils/theme';
 import 'movement.css';
 
 const SearchContainer = memo(function SearchContainer({ logo = true, cls, nav = true }) {
@@ -104,7 +105,7 @@ const SearchContainer = memo(function SearchContainer({ logo = true, cls, nav = 
     >
       {logo && <Logo options="w-[15rem] h-30" />}
       <GlowWrapper
-        glowOptions={{ color: options.glowWrapperColor || '255, 255, 255', size: 70, opacity: 0.2 }}
+        glowOptions={{ color: options.glowWrapperColor || '43, 217, 167', size: 80, opacity: 0.25 }}
       >
         <div className="w-[40.625rem]">
           <div
@@ -146,8 +147,19 @@ const SearchContainer = memo(function SearchContainer({ logo = true, cls, nav = 
               {results.map((result) => (
                 <div
                   key={result.phrase}
-                  className="rounded-[9px] w-full h-11 hover:bg-[#d4d4d418] cursor-pointer duration-100 ease-in px-3 pl-2.5 flex items-center"
+                  className="rounded-[9px] w-full h-11 cursor-pointer px-3 pl-2.5 flex items-center"
+                  style={{
+                    transition: `all ${transitions.fast}`,
+                  }}
                   onClick={() => handleResultClick(result.phrase)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = `rgba(43, 217, 167, 0.1)`;
+                    e.currentTarget.style.color = colors.mint[400];
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'inherit';
+                  }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

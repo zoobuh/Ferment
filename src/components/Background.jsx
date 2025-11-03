@@ -16,8 +16,8 @@ const Background = () => {
     const ctx = canvas.getContext('2d');
 
     const DPR = Math.max(1, Math.floor(window.devicePixelRatio || 1));
-    const cyan = '#00b6f7';
-    const back = '#000000';
+    const cyan = '#2BD6A5';
+    const back = '#1E1F22';
 
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const SHAPE_COUNT = prefersReduced ? 3 : 6;
@@ -44,7 +44,7 @@ const Background = () => {
     const FPS = 12; // cap frames per second
     const frameInterval = 1000 / FPS;
 
-    const isSimplePage = pathname.startsWith('/settings') || pathname.startsWith('/support') || pathname.startsWith('/documentation');
+    const isSimplePage = pathname.startsWith('/settings') || pathname.startsWith('/apps') || pathname.startsWith('/games');
 
     const draw = (ts) => {
       if (options?.performanceMode || isSimplePage) {

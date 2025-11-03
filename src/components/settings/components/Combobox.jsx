@@ -45,7 +45,7 @@ const ComboBox = ({
         className={clsx('relative w-full', 'rounded-xl border')}
         style={{
           backgroundColor: options.settingsDropdownColor || '#000000',
-          borderColor: options.settingsBorder || options.paginationBorderColor || '#00b6f7',
+          borderColor: options.settingsBorder || options.paginationBorderColor || '#2BD6A5',
           color: options.bodyText || '#e6faff',
           maxWidth: `${maxW}rem`,
         }}
@@ -88,7 +88,7 @@ const ComboBox = ({
               'rounded-[0.8rem] border bg-inherit p-[0.4rem] shadow-lg',
               scroll
             )}
-            style={{ borderColor: options.settingsBorder || options.paginationBorderColor || '#00b6f7', color: options.bodyText || '#e6faff' }}
+            style={{ borderColor: options.settingsBorder || options.paginationBorderColor || '#2BD6A5', color: options.bodyText || '#e6faff' }}
           >
             {filteredOptions.map((cfg) => (
               <ComboboxOption

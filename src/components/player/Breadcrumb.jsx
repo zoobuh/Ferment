@@ -11,7 +11,7 @@ const Breadcrumb = ({ theme, name }) => {
         <div className={clsx("flex h-2 w-fit max-w-72 px-3 p-4 items-center rounded-xl",
             theming.appItemColor, theming[`theme-${theme || 'default'}`])}>
                 <Gamepad2 size="16" /> &nbsp;
-                <span className="hover:underline cursor-pointer" onClick={() => nav('/documentation')}>Games</span>
+                <span className="hover:underline cursor-pointer" onClick={() => nav('/games')}>Games</span>
                 <span className="mx-1">&gt;</span>
                 <span className="truncate">{name}</span>
         </div>

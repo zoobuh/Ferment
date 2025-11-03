@@ -11,7 +11,7 @@ const Loader = ({ theme, app }) => {
 
     useEffect(() => {
         const query = sessionStorage.getItem('query');
-        if (!query) window.location.href = '/documentation';
+        if (!query) window.location.href = '/games';
     }, []);
 
     const fs = () => gmRef.current?.requestFullscreen?.();

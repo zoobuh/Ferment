@@ -8,6 +8,7 @@ import styles from '../styles/apps.module.css';
 import theme from '../styles/theming.module.css';
 import Pagination from '@mui/material/Pagination';
 import clsx from 'clsx';
+import { colors, transitions, shadows } from '../utils/theme';
 
 const SORT_OPTIONS = [
   { value: 'categorical', label: 'Categorical' },
@@ -44,23 +45,81 @@ const loadExternalGames = async () => {
 };
 
 
-const AppCard = memo(({ app, onClick, fallbackMap, onImgError, itemTheme, itemStyles }) => (
-  <div
-    key={app.appName}
-    className={clsx(itemStyles.app, itemTheme.appItemColor, itemTheme[`theme-${itemTheme.current || 'default'}`], app.disabled ? 'disabled cursor-not-allowed' : 'cursor-pointer')}
-    onClick={!app.disabled ? () => onClick(app) : undefined}
-  >
-    <div className="w-20 h-20 rounded-[12px] mb-4 overflow-hidden">
-      {fallbackMap[app.appName] ? (
-        <LayoutGrid className="w-full h-full" />
-      ) : (
-        <img src={app.icon} draggable="false" className="w-full h-full object-cover" onError={() => onImgError(app.appName)} />
-      )}
+const AppCard = memo(({ app, onClick, fallbackMap, onImgError }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <div
+      className={app.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '1.5rem',
+        borderRadius: '1rem',
+        backgroundColor: colors.dark[900],
+        border: `1px solid ${isHovered ? colors.mint[400] : colors.border.light}`,
+        transition: `all ${transitions.base}`,
+        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+        boxShadow: isHovered ? shadows.glowStrong : shadows.md,
+        opacity: app.disabled ? 0.5 : 1,
+        animation: 'fadeIn 0.4s ease-out',
+      }}
+      onClick={!app.disabled ? () => onClick(app) : undefined}
+      onMouseEnter={() => !app.disabled && setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div 
+        style={{
+          width: '80px',
+          height: '80px',
+          borderRadius: '14px',
+          marginBottom: '1rem',
+          overflow: 'hidden',
+          backgroundColor: colors.dark[800],
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: `transform ${transitions.base}`,
+          transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+        }}
+      >
+        {fallbackMap[app.appName] ? (
+          <LayoutGrid size={40} style={{ color: colors.mint[400] }} />
+        ) : (
+          <img 
+            src={app.icon} 
+            draggable="false" 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={() => onImgError(app.appName)} 
+          />
+        )}
+      </div>
+      <p 
+        style={{
+          fontSize: '0.9375rem',
+          fontWeight: 600,
+          color: colors.text.primary,
+          textAlign: 'center',
+          marginBottom: '0.25rem',
+          wordBreak: 'break-word',
+        }}
+      >
+        {app.appName}
+      </p>
+      <p 
+        style={{
+          fontSize: '0.8125rem',
+          color: colors.text.muted,
+          textAlign: 'center',
+          wordBreak: 'break-word',
+        }}
+      >
+        {app.desc || ''}
+      </p>
     </div>
-    <p className="text-m font-semibold">{app.appName.split('').join('\u200B')}</p>
-    <p className="text-sm mt-2">{(app.desc || '').split('').join('\u200B')}</p>
-  </div>
-));
+  );
+});
 
 const Apps = memo(({ type = 'default', data = appsData }) => {
   const nav = useNavigate();
@@ -137,9 +196,9 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
   const navApp = useCallback((app) => {
     if (!app) return;
     sessionStorage.setItem('query', app.url);
-    if (type != "apps") nav('/docs/r/', { state: { app } })
+    if (type != "apps") nav('/games/r', { state: { app } })
     else nav('/indev');
-  }, [nav]);
+  }, [nav, type]);
 
   const handleSearch = useCallback((e) => {
     setQ(e.target.value);
@@ -153,21 +212,130 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
   const placeholder = useMemo(() => `Search ${appsList.length} ${type}`, [appsList.length, type]);
 
   return (
-    <div className={`${styles.appContainer} w-full mx-auto`}>
-      <div className="w-full px-4 py-4 flex justify-center mt-3">
-        <div className={clsx('relative flex items-center gap-2.5 rounded-[10px] px-3 w-[600px] h-11', searchBarCls)}>
-          <Search className="w-4 h-4 shrink-0" />
-          <input type="text" placeholder={placeholder} value={q} onChange={handleSearch} className="flex-1 bg-transparent outline-none text-sm" />
+    <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
+      {/* Search Bar */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+        <div 
+          style={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            borderRadius: '12px',
+            padding: '0 1rem',
+            width: '100%',
+            maxWidth: '600px',
+            height: '48px',
+            backgroundColor: colors.dark[900],
+            border: `1px solid ${colors.border.light}`,
+            transition: `all ${transitions.base}`,
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = colors.mint[400];
+            e.currentTarget.style.boxShadow = `0 0 0 3px rgba(43, 217, 167, 0.1)`;
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = colors.border.light;
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+        >
+          <Search size={18} style={{ color: colors.text.muted, flexShrink: 0 }} />
+          <input 
+            type="text" 
+            placeholder={placeholder} 
+            value={q} 
+            onChange={handleSearch} 
+            style={{
+              flex: 1,
+              backgroundColor: 'transparent',
+              outline: 'none',
+              border: 'none',
+              fontSize: '0.9375rem',
+              color: colors.text.primary,
+            }}
+          />
           {type !== 'apps' && (
-            <div ref={sortRef} className="relative flex items-center">
-              <button type="button" onClick={() => setShowSort((s) => !s)} className="flex items-center gap-1 text-xs md:text-sm rounded-md px-2 py-1 h-7 cursor-pointer bg-[#ffffff10] hover:bg-[#ffffff18] active:bg-[#ffffff25] border border-white/15">
+            <div ref={sortRef} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <button 
+                type="button" 
+                onClick={() => setShowSort((s) => !s)} 
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontSize: '0.875rem',
+                  borderRadius: '8px',
+                  padding: '0.375rem 0.75rem',
+                  height: '32px',
+                  cursor: 'pointer',
+                  backgroundColor: colors.dark[800],
+                  border: `1px solid ${colors.border.medium}`,
+                  color: colors.text.secondary,
+                  transition: `all ${transitions.base}`,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.dark[700];
+                  e.currentTarget.style.borderColor = colors.mint[400];
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.dark[800];
+                  e.currentTarget.style.borderColor = colors.border.medium;
+                }}
+              >
                 <span className="capitalize hidden sm:inline">{SORT_OPTIONS.find((o) => o.value === sort)?.label}</span>
-                <ChevronDown size={14} className={showSort ? 'rotate-180 transition-transform' : 'transition-transform'} />
+                <ChevronDown 
+                  size={14} 
+                  style={{
+                    transform: showSort ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: `transform ${transitions.base}`,
+                  }}
+                />
               </button>
               {showSort && (
-                <ul className={clsx('absolute right-0 top-[calc(100%+0.5rem)] z-20 w-44 rounded-md border border-white/15 shadow-lg p-1', searchBarCls)} role="listbox">
+                <ul 
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 'calc(100% + 0.5rem)',
+                    zIndex: 20,
+                    width: '176px',
+                    borderRadius: '8px',
+                    border: `1px solid ${colors.border.medium}`,
+                    boxShadow: shadows.xl,
+                    padding: '0.25rem',
+                    backgroundColor: colors.dark[900],
+                    animation: 'fadeIn 0.2s ease-out',
+                  }}
+                  role="listbox"
+                >
                   {SORT_OPTIONS.map(({ value, label }) => (
-                    <li key={value} role="option" aria-selected={sort === value} onClick={() => { setSort(value); setShowSort(false); setPage(1); }} className="px-2 py-1.5 rounded text-[0.8rem] cursor-pointer transition-colors text-inherit hover:bg-[#ffffff12]">{label}</li>
+                    <li 
+                      key={value} 
+                      role="option" 
+                      aria-selected={sort === value} 
+                      onClick={() => { setSort(value); setShowSort(false); setPage(1); }} 
+                      style={{
+                        padding: '0.5rem 0.75rem',
+                        borderRadius: '6px',
+                        fontSize: '0.875rem',
+                        cursor: 'pointer',
+                        transition: `all ${transitions.fast}`,
+                        color: sort === value ? colors.mint[400] : colors.text.secondary,
+                        backgroundColor: sort === value ? `rgba(43, 217, 167, 0.1)` : 'transparent',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (sort !== value) {
+                          e.currentTarget.style.backgroundColor = colors.dark[800];
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (sort !== value) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }
+                      }}
+                    >
+                      {label}
+                    </li>
                   ))}
                 </ul>
               )}
@@ -176,20 +344,63 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-center pb-2">
+      {/* Grid */}
+      <div 
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+          gap: '1.5rem',
+          marginBottom: '2rem',
+        }}
+      >
         {isLoading ? (
-          <div className="flex items-center justify-center w-full py-20">
-            <div className="text-sm opacity-70">Loading games...</div>
+          <div 
+            style={{
+              gridColumn: '1 / -1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '5rem 0',
+            }}
+          >
+            <div 
+              style={{
+                fontSize: '0.875rem',
+                color: colors.text.muted,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+              }}
+            >
+              <div 
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  border: `3px solid ${colors.dark[700]}`,
+                  borderTopColor: colors.mint[400],
+                  borderRadius: '50%',
+                  animation: 'fermet-spin 1s linear infinite',
+                }}
+              />
+              Loading {type}...
+            </div>
           </div>
         ) : (
           filtered.paged.map((app) => (
-            <AppCard key={app.appName} app={app} onClick={navApp} fallbackMap={fallback} onImgError={handleImgError} itemTheme={{ ...theme, current: options.theme || 'default' }} itemStyles={styles} />
+            <AppCard 
+              key={app.appName} 
+              app={app} 
+              onClick={navApp} 
+              fallbackMap={fallback} 
+              onImgError={handleImgError} 
+            />
           ))
         )}
       </div>
 
+      {/* Pagination */}
       {filtered.filteredApps.length > perPage && (
-        <div className="flex flex-col items-center pb-7">
+        <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: '2rem' }}>
           <Pagination
             count={filtered.totalPages}
             page={page}
@@ -198,14 +409,26 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
             variant="outlined"
             sx={{
               '& .MuiPaginationItem-root': {
-                color: options.paginationTextColor || '#9baec8',
-                borderColor: options.paginationBorderColor || '#ffffff1c',
-                backgroundColor: options.paginationBgColor || '#141d2b',
-                fontFamily: 'SFProText',
+                color: colors.text.secondary,
+                borderColor: colors.border.medium,
+                backgroundColor: colors.dark[900],
+                fontFamily: 'inherit',
+                fontWeight: 500,
+                transition: `all ${transitions.base}`,
+                '&:hover': {
+                  backgroundColor: colors.dark[800],
+                  borderColor: colors.mint[400],
+                  color: colors.text.primary,
+                },
               },
               '& .Mui-selected': {
-                backgroundColor: `${options.paginationSelectedColor || '#75b3e8'} !important`,
-                color: '#fff !important',
+                backgroundColor: `${colors.mint[400]} !important`,
+                borderColor: `${colors.mint[400]} !important`,
+                color: `${colors.dark[900]} !important`,
+                fontWeight: 600,
+                '&:hover': {
+                  backgroundColor: `${colors.mint[500]} !important`,
+                },
               },
             }}
           />
@@ -222,9 +445,15 @@ const AppLayout = ({ type }) => {
   const scrollCls = clsx('scrollbar scrollbar-thin scrollbar-track-transparent', !options?.type || options.type === 'dark' ? 'scrollbar-thumb-gray-600' : 'scrollbar-thumb-gray-500');
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div 
+      className="flex flex-col h-screen overflow-hidden"
+      style={{ backgroundColor: colors.dark[800] }}
+    >
       <Nav />
-      <div className={clsx('flex-1 overflow-y-auto', scrollCls)}>
+      <div 
+        className={clsx('flex-1 overflow-y-auto', scrollCls)}
+        style={{ animation: 'fadeIn 0.3s ease-out' }}
+      >
         <Apps type={type} />
       </div>
     </div>
