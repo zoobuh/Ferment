@@ -83,7 +83,7 @@ class TabManager {
       enc: arr[0],
       dnc: arr[1],
       frames: {},
-      tabs: [{ id: 1, title: 'New Tab', url: '/new', active: true }],
+      tabs: [],
       history: new Map(),
       urlTrack: new Map(),
       nextId: 2,
@@ -92,6 +92,10 @@ class TabManager {
       maxW: 200,
       urlInterval: 1000
     });
+
+    if (!this.loadTabs()) {
+      this.tabs = [{ id: 1, title: 'New Tab', url: '/new', active: true }];
+    }
 
     const els = ['tabs-cont', 'tab-btn', 'fcn', 'url', 'class-portal']
       .reduce((acc, id) => ({ ...acc, [id]: document.getElementById(id) }), {});
@@ -372,19 +376,45 @@ class TabManager {
   };
 
 
-  add = () => {
+  saveTabs = () => {
+    const tabsToSave = this.tabs.map(t => ({
+      id: t.id,
+      title: t.title,
+      url: t.url,
+      active: t.active
+    }));
+    localStorage.setItem('tabs', JSON.stringify(tabsToSave));
+    localStorage.setItem('nextId', this.nextId.toString());
+  };
+
+  loadTabs = () => {
+    try {
+      const savedTabs = JSON.parse(localStorage.getItem('tabs'));
+      const savedNextId = localStorage.getItem('nextId');
+      if (savedTabs && Array.isArray(savedTabs) && savedTabs.length > 0) {
+        this.tabs = savedTabs;
+        this.nextId = savedNextId ? parseInt(savedNextId) : (Math.max(...savedTabs.map(t => t.id)) + 1);
+        return true;
+      }
+    } catch (e) {
+      console.error('Failed to load tabs:', e);
+    }
+    return false;
+  };
+
+  add = (url = this.newTabUrl) => {
     if (this.tabs.length >= this.maxTabs) return;
     this.tabs.forEach(t => t.active = false);
-    const t = { id: this.nextId++, title: this.newTabTitle, url: this.newTabUrl, active: true, justAdded: true };
+    const t = { id: this.nextId++, title: this.newTabTitle, url: url, active: true, justAdded: true };
     this.tabs.push(t);
     this.render();
     this.createIframes();
     this.updateAddBtn();
     this.track(t.id);
-    if (this.ui) this.ui.value = '';
+    if (this.ui) this.ui.value = this.isNewTab(url) ? '' : this.ex(url);
     this.emitNewFrame();
+    this.saveTabs();
   };
-
 
   close = (id) => {
     if (this.tabs.length === 1) return;
@@ -406,6 +436,7 @@ class TabManager {
     this.render();
     this.updateAddBtn();
     this.updateWidths();
+    this.saveTabs();
   };
 
   activate = (id) => {
@@ -418,6 +449,7 @@ class TabManager {
       this.ui.value = activeTab && !this.isNewTab(activeTab.url) ? this.ex(activeTab.url) : '';
     }
     this.emitNewFrame();
+    this.saveTabs();
   };
 
   returnMeta = () => {
@@ -445,7 +477,7 @@ class TabManager {
       return;
     }
 
-    if (input === 'tabs://new') {
+    if (input === 'tabs://new' || input === '/new') {
       document.getElementById(`iframe-${t.id}`)?.remove();
       const f = document.createElement('iframe');
       f.id = `iframe-${t.id}`;
@@ -461,6 +493,7 @@ class TabManager {
       f.onload = () => { try { contentObserver.unbind(); contentObserver.bind(); } catch { } };
       this.showActive();
       this.render();
+      this.saveTabs();
       return;
     }
 
@@ -478,6 +511,7 @@ class TabManager {
     this.showActive();
     this.render();
     if (t.active) this.emitNewFrame();
+    this.saveTabs();
   };
 
   getTabWidth = () => {
@@ -593,16 +627,17 @@ window.addEventListener('load', async () => {
     tabManager = new TabManager([c.encodeUrl, c.decodeUrl]);
   } catch (err) {
     error('TabManager init failed:', err);
-    throw err;
   }
 
   const query = sessionStorage.getItem('query');
   if (query) {
-    tabManager.navigate(query);
     sessionStorage.removeItem('query');
+    if (tabManager.tabs.length === 1 && tabManager.isNewTab(tabManager.tabs[0].url)) {
+      tabManager.updateUrl(query);
+    } else {
+      tabManager.add(query);
+    }
   }
-
-  setInterval(setTransport, 30000);
 
   const domMap = {
     'tabs-btn': () => document.getElementById('tb')?.classList.toggle('hidden'),

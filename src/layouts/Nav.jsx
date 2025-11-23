@@ -19,7 +19,7 @@ const Nav = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const { options } = useOptions();
-  
+
   const scale = Number(options.navScale || 1);
   const dimensions = useMemo(() => ({
     navHeight: Math.round(64 * scale),
@@ -28,9 +28,15 @@ const Nav = memo(() => {
     versionFont: Math.round(9 * scale),
     versionMargin: Math.round(-10 * scale)
   }), [scale]);
-  
-  const handleLogoClick = useCallback(() => navigate('/'), [navigate]);
-  
+
+  const handleLogoClick = useCallback(() => {
+    if (window.self !== window.top) {
+      window.parent.location.href = '/';
+    } else {
+      navigate('/');
+    }
+  }, [navigate]);
+
   const isActive = useCallback((route) => {
     if (route === '/') return location.pathname === '/';
     return location.pathname.startsWith(route);
@@ -94,11 +100,17 @@ const Nav = memo(() => {
         {navItems.map((item) => {
           const active = isActive(item.route);
           const Icon = item.icon;
-          
+
           return (
             <button
               key={item.id}
-              onClick={() => navigate(item.route)}
+              onClick={() => {
+                if (window.self !== window.top) {
+                  window.parent.location.href = item.route;
+                } else {
+                  navigate(item.route);
+                }
+              }}
               style={{
                 position: 'relative',
                 display: 'flex',
@@ -127,7 +139,7 @@ const Nav = memo(() => {
             >
               <Icon size={18} strokeWidth={active ? 2.5 : 2} />
               <span>{item.name}</span>
-              
+
               {/* Active Indicator */}
               {active && (
                 <div

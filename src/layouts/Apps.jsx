@@ -47,7 +47,7 @@ const loadExternalGames = async () => {
 
 const AppCard = memo(({ app, onClick, fallbackMap, onImgError }) => {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   return (
     <div
       className={app.disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
@@ -69,7 +69,7 @@ const AppCard = memo(({ app, onClick, fallbackMap, onImgError }) => {
       onMouseEnter={() => !app.disabled && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div 
+      <div
         style={{
           width: '80px',
           height: '80px',
@@ -87,15 +87,15 @@ const AppCard = memo(({ app, onClick, fallbackMap, onImgError }) => {
         {fallbackMap[app.appName] ? (
           <LayoutGrid size={40} style={{ color: colors.mint[400] }} />
         ) : (
-          <img 
-            src={app.icon} 
-            draggable="false" 
+          <img
+            src={app.icon}
+            draggable="false"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={() => onImgError(app.appName)} 
+            onError={() => onImgError(app.appName)}
           />
         )}
       </div>
-      <p 
+      <p
         style={{
           fontSize: '0.9375rem',
           fontWeight: 600,
@@ -107,7 +107,7 @@ const AppCard = memo(({ app, onClick, fallbackMap, onImgError }) => {
       >
         {app.appName}
       </p>
-      <p 
+      <p
         style={{
           fontSize: '0.8125rem',
           color: colors.text.muted,
@@ -121,7 +121,7 @@ const AppCard = memo(({ app, onClick, fallbackMap, onImgError }) => {
   );
 });
 
-const Apps = memo(({ type = 'default', data = appsData }) => {
+const Apps = memo(({ type = 'default', data = appsData, onAppClick }) => {
   const nav = useNavigate();
   const { options } = useOptions();
   const [appsList, setAppsList] = useState([]);
@@ -134,15 +134,15 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
   const sortRef = useRef(null);
   const [fallback, setFallback] = useState({});
 
-  const perPage = options.loadExternalGames && options.itemsPerPage === 10000 
-    ? 100 
+  const perPage = options.loadExternalGames && options.itemsPerPage === 10000
+    ? 100
     : (options.itemsPerPage || 20);
 
   useEffect(() => {
     const loadGames = async () => {
       setIsLoading(true);
       const baseGames = data[type] || [];
-      
+
       if (type === 'games' && options.loadExternalGames) {
         const externalGames = await loadExternalGames();
         const baseGameNames = new Set(baseGames.map(g => g.appName.toLowerCase()));
@@ -153,10 +153,10 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
       } else {
         setAppsList(baseGames);
       }
-      
+
       setIsLoading(false);
     };
-    
+
     loadGames();
   }, [data, type, options.loadExternalGames]);
 
@@ -195,10 +195,13 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
 
   const navApp = useCallback((app) => {
     if (!app) return;
+    if (onAppClick) {
+      onAppClick(app);
+      return;
+    }
     sessionStorage.setItem('query', app.url);
-    if (type != "apps") nav('/games/r', { state: { app } })
-    else nav('/indev');
-  }, [nav, type]);
+    nav('/browser');
+  }, [nav, onAppClick]);
 
   const handleSearch = useCallback((e) => {
     setQ(e.target.value);
@@ -207,15 +210,13 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
 
   const handleImgError = useCallback((name) => setFallback((prev) => ({ ...prev, [name]: true })), []);
 
-  const searchBarCls = useMemo(() => clsx(theme.appsSearchColor, theme[`theme-${options.theme || 'default'}`]), [options.theme]);
-
   const placeholder = useMemo(() => `Search ${appsList.length} ${type}`, [appsList.length, type]);
 
   return (
     <div style={{ width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
       {/* Search Bar */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
-        <div 
+        <div
           style={{
             position: 'relative',
             display: 'flex',
@@ -240,11 +241,11 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
           }}
         >
           <Search size={18} style={{ color: colors.text.muted, flexShrink: 0 }} />
-          <input 
-            type="text" 
-            placeholder={placeholder} 
-            value={q} 
-            onChange={handleSearch} 
+          <input
+            type="text"
+            placeholder={placeholder}
+            value={q}
+            onChange={handleSearch}
             style={{
               flex: 1,
               backgroundColor: 'transparent',
@@ -256,9 +257,9 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
           />
           {type !== 'apps' && (
             <div ref={sortRef} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <button 
-                type="button" 
-                onClick={() => setShowSort((s) => !s)} 
+              <button
+                type="button"
+                onClick={() => setShowSort((s) => !s)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -283,8 +284,8 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
                 }}
               >
                 <span className="capitalize hidden sm:inline">{SORT_OPTIONS.find((o) => o.value === sort)?.label}</span>
-                <ChevronDown 
-                  size={14} 
+                <ChevronDown
+                  size={14}
                   style={{
                     transform: showSort ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: `transform ${transitions.base}`,
@@ -292,7 +293,7 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
                 />
               </button>
               {showSort && (
-                <ul 
+                <ul
                   style={{
                     position: 'absolute',
                     right: 0,
@@ -309,11 +310,11 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
                   role="listbox"
                 >
                   {SORT_OPTIONS.map(({ value, label }) => (
-                    <li 
-                      key={value} 
-                      role="option" 
-                      aria-selected={sort === value} 
-                      onClick={() => { setSort(value); setShowSort(false); setPage(1); }} 
+                    <li
+                      key={value}
+                      role="option"
+                      aria-selected={sort === value}
+                      onClick={() => { setSort(value); setShowSort(false); setPage(1); }}
                       style={{
                         padding: '0.5rem 0.75rem',
                         borderRadius: '6px',
@@ -345,7 +346,7 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
       </div>
 
       {/* Grid */}
-      <div 
+      <div
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
@@ -354,7 +355,7 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
         }}
       >
         {isLoading ? (
-          <div 
+          <div
             style={{
               gridColumn: '1 / -1',
               display: 'flex',
@@ -363,7 +364,7 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
               padding: '5rem 0',
             }}
           >
-            <div 
+            <div
               style={{
                 fontSize: '0.875rem',
                 color: colors.text.muted,
@@ -372,7 +373,7 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
                 gap: '0.75rem',
               }}
             >
-              <div 
+              <div
                 style={{
                   width: '20px',
                   height: '20px',
@@ -387,12 +388,12 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
           </div>
         ) : (
           filtered.paged.map((app) => (
-            <AppCard 
-              key={app.appName} 
-              app={app} 
-              onClick={navApp} 
-              fallbackMap={fallback} 
-              onImgError={handleImgError} 
+            <AppCard
+              key={app.appName}
+              app={app}
+              onClick={navApp}
+              fallbackMap={fallback}
+              onImgError={handleImgError}
             />
           ))
         )}
@@ -440,21 +441,21 @@ const Apps = memo(({ type = 'default', data = appsData }) => {
 
 Apps.displayName = 'Apps';
 
-const AppLayout = ({ type }) => {
+const AppLayout = ({ type, onAppClick }) => {
   const { options } = useOptions();
   const scrollCls = clsx('scrollbar scrollbar-thin scrollbar-track-transparent', !options?.type || options.type === 'dark' ? 'scrollbar-thumb-gray-600' : 'scrollbar-thumb-gray-500');
 
   return (
-    <div 
+    <div
       className="flex flex-col h-screen overflow-hidden"
       style={{ backgroundColor: colors.dark[800] }}
     >
       <Nav />
-      <div 
+      <div
         className={clsx('flex-1 overflow-y-auto', scrollCls)}
         style={{ animation: 'fadeIn 0.3s ease-out' }}
       >
-        <Apps type={type} />
+        <Apps type={type} onAppClick={onAppClick} />
       </div>
     </div>
   );

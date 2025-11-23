@@ -158,7 +158,7 @@ const hotkeyHandler = (e: KeyboardEvent): void => {
 export function setupHotkeys(): void {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('ui') !== 'false') {
-    
+
     window.addEventListener('keydown', hotkeyHandler);
 
     window.addEventListener('message', (e: MessageEvent) => {
