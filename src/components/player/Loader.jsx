@@ -47,7 +47,7 @@ const Loader = ({ theme, app }) => {
             </div>
 
             <iframe
-                src="/src/static/loader.html?ui=false"
+                src="/loader.html?ui=false"
                 ref={gmRef}
                 onContextMenu={(e) => e.preventDefault()}
                 className="w-full flex-grow"

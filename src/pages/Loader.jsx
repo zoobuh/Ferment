@@ -17,7 +17,7 @@ export default function Loader() {
 
   return (
     <iframe
-      src="/src/static/loader.html"
+      src="/loader.html"
       className="fixed top-0 left-0 w-screen h-screen border-none m-0 p-0 overflow-hidden z-9999"
     />
   );
