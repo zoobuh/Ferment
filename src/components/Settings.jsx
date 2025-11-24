@@ -5,7 +5,10 @@ import { useOptions } from '/src/utils/optionsContext';
 import SettingsContainerItem from './settings/components/ContainerItem';
 import * as settings from '/src/data/settings';
 import PanicDialog from './PanicDialog';
+<<<<<<< HEAD
 import { colors } from '/src/utils/theme';
+=======
+>>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
 
 const Type = ({ type }) => {
   const { options, updateOption } = useOptions();
@@ -26,9 +29,15 @@ const Setting = ({ setting }) => {
   const { options, updateOption } = useOptions();
   const [panicOpen, setPanicOpen] = useState(false);
 
+<<<<<<< HEAD
   const privSettings = settings.privacyConfig({
     options,
     updateOption,
+=======
+  const privSettings = settings.privacyConfig({ 
+    options, 
+    updateOption, 
+>>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
     openPanic: () => setPanicOpen(true)
   });
 
@@ -46,12 +55,15 @@ const Setting = ({ setting }) => {
         'flex flex-1 flex-col gap-7 overflow-y-auto p-10',
         scroll
       )}
+<<<<<<< HEAD
       style={{
         opacity: 1,
         visibility: 'visible',
         position: 'relative',
         zIndex: 0,
       }}
+=======
+>>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
     >
       {children}
       <PanicDialog state={panicOpen} set={setPanicOpen} />

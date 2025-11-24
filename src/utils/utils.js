@@ -79,8 +79,12 @@ export const check = (() => {
       e.returnValue = '';
     });
   }
+<<<<<<< HEAD
   if (window.top === window.self && op.aboutBlank && !sessionStorage.getItem('aboutBlankOpened')) {
     sessionStorage.setItem('aboutBlankOpened', 'true');
+=======
+  if (window.top === window.self && op.aboutBlank) {
+>>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
     const w = open('about:blank');
     if (!w || w.closed) {
       alert('Please enable popups to continue.');

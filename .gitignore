@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules/
 dist/
 build/
@@ -5,3 +6,6 @@ build/
 .env
 .DS_Store
 *.log
+=======
+.vercel
+>>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
