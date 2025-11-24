@@ -23,10 +23,6 @@ const Nav = memo(() => {
   const scale = Number(options.navScale || 1);
   const dimensions = useMemo(() => ({
     navHeight: Math.round(64 * scale),
-<<<<<<< HEAD
-=======
-    logoWidth: Math.round(122 * scale),
->>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
     logoHeight: Math.round(41 * scale),
     versionFont: Math.round(9 * scale),
     versionMargin: Math.round(-10 * scale)
@@ -67,10 +63,6 @@ const Nav = memo(() => {
       {/* Logo Section */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
         <Logo
-<<<<<<< HEAD
-=======
-          width={dimensions.logoWidth}
->>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
           height={dimensions.logoHeight}
           action={handleLogoClick}
         />
