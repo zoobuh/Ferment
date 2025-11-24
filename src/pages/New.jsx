@@ -22,24 +22,19 @@ export default function NewTab() {
       else setGreeting('Good evening');
     };
 
-<<<<<<< HEAD
-    updateTime(); // initialize immediately
-
-    const timer = setInterval(updateTime, 1000); // update every second for smoothness
-=======
+    // Initialize immediately
     updateTime();
-    const timer = setInterval(updateTime, 60000);
->>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
+
+    // Smooth clock – update every second
+    const timer = setInterval(updateTime, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
   const formattedTime = time.toLocaleTimeString([], {
     hour: '2-digit',
     minute: '2-digit',
-<<<<<<< HEAD
-    second: '2-digit', // optional: show seconds
-=======
->>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
+    second: '2-digit', // keep seconds since you wanted smoother time
     hour12: true,
   });
 
@@ -54,24 +49,14 @@ export default function NewTab() {
       className="min-h-screen flex flex-col"
       style={{
         backgroundColor: colors.dark[800],
-<<<<<<< HEAD
-=======
         animation: 'fadeIn 0.5s ease-out',
->>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
       }}
     >
       <Nav />
 
-<<<<<<< HEAD
       <div className="flex-1 flex flex-col items-center justify-center p-6 gap-8 relative">
-        {/* Clock Container with higher z-index and relative positioning */}
-        <div
-          className="text-center relative z-60"
-        >
-=======
-      <div className="flex-1 flex flex-col items-center justify-center p-6 gap-8">
-        <div className="-mt-20 text-center" style={{ animation: 'slideUp 0.6s ease-out' }}>
->>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
+        {/* Clock Container */}
+        <div className="text-center relative z-60" style={{ animation: 'slideUp 0.6s ease-out' }}>
           <div
             className="text-5xl font-light mb-2"
             style={{
@@ -82,6 +67,7 @@ export default function NewTab() {
           >
             {formattedTime}
           </div>
+
           <div
             className="text-lg"
             style={{
@@ -98,12 +84,11 @@ export default function NewTab() {
           </div>
         </div>
 
-<<<<<<< HEAD
-        {/* Search & QuickLinks */}
-        <div className="w-full max-w-2xl relative">
-=======
-        <div className="w-full max-w-2xl relative" style={{ animation: 'slideUp 0.7s ease-out' }}>
->>>>>>> 8456006092dab94de6ec3e6baa369906e2868395
+        {/* Search + QuickLinks */}
+        <div
+          className="w-full max-w-2xl relative"
+          style={{ animation: 'slideUp 0.7s ease-out' }}
+        >
           <Search logo={false} nav={false} cls="-mt-3 absolute z-50 w-full" />
           <QuickLinks cls="mt-24" nav={false} />
         </div>
